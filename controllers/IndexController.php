@@ -2,10 +2,12 @@
 
 namespace App\Controllers;
 
+use App\Components\View;
+
 class IndexController extends Controller
 {
     public function index()
     {
-        return 123;
+        return View::render('home');
     }
 }
