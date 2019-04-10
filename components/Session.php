@@ -8,7 +8,7 @@ class Session
 {
     public static function set($key, $value)
     {
-        if (is_array($value)) {
+        if (is_array($value) || is_object($value)) {
             $_SESSION[$key] = json_encode($value);
         } else {
             $_SESSION[$key] = $value;
@@ -28,8 +28,12 @@ class Session
     {
         if (!isset($_SESSION[$key]))
             return null;
-        if (json_decode($_SESSION[$key])) {
+        if (!is_object($_SESSION[$key]) && json_decode($_SESSION[$key])) {
             $data = json_decode($_SESSION[$key], true);
+//            echo '<pre>';
+//            echo "TEST<br>";
+//            print_r($_SESSION);
+//            echo '</pre>';
             if (isset($data['flash'])) {
                 return $data['value'];
             } else {

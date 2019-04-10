@@ -6,13 +6,12 @@ namespace App\Models;
 use App\Components\DB;
 
 
-abstract class Model
+abstract class Model implements \JsonSerializable
 {
     protected static $connection = null;
     protected static $table = null;
     protected $attributes = [];
     protected static $params = [];
-
     public static function setConnection() {
         static::$connection = DB::getConnection();
     }
@@ -31,6 +30,12 @@ abstract class Model
     {
         $value = htmlspecialchars(addslashes(trim($value)));
         $this->attributes[$key] = $value;
+    }
+
+    public function jsonSerialize()
+    {
+        $vars = get_object_vars($this);
+        return $vars;
     }
 
     public static function find($id)
