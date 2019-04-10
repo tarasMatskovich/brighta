@@ -5,13 +5,20 @@
             <div class="form-group">
                 <label for="email">Ваш email адрес:</label>
                 <input type="email" class="form-control" id="email" name="email" placeholder="Введите email">
+                <div class="invalid-feedback">
+                    Введите email
+                </div>
             </div>
+
             <div class="form-group">
                 <label for="password">Ваш пароль:</label>
                 <input type="password" class="form-control" id="password" name="password" placeholder="Введите пароль">
+                <div class="invalid-feedback">
+                    Введите пароль
+                </div>
             </div>
 
-            <button type="submit" class="btn btn-success">Войти</button>
+            <button type="submit" class="btn btn-success" id="log">Войти</button>
         </form>
     </div>
 

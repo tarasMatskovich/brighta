@@ -41,7 +41,7 @@ class RegisterController extends Controller
                     Session::setFlash('error', $errors);
                     header('Location: http://'.$_SERVER['HTTP_HOST']. "/register");
                 } else {
-                    if (isset($_FILES['image'])) {
+                    if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
                         $types = array('image/gif', 'image/png', 'image/jpeg');
                         if (!in_array($_FILES['image']['type'], $types)) {
                             Session::setFlash('error', [['Можно загрузить только файлы изображения (gif,png,jpg)']]);
