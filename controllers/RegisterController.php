@@ -6,6 +6,7 @@ namespace App\Controllers;
 use App\Components\View;
 use App\Components\Validator;
 use App\Components\Session;
+use App\Models\User;
 
 class RegisterController extends Controller
 {
@@ -40,12 +41,30 @@ class RegisterController extends Controller
                     Session::setFlash('error', $errors);
                     header('Location: http://'.$_SERVER['HTTP_HOST']. "/register");
                 } else {
-                    return "yes";
+                    $result = $this->saveUser($data);
+                    if ($result) {
+                        Session::setFlash('success', [['Вы были успешно зарегистрированы']]);
+                        header('Location: http://'.$_SERVER['HTTP_HOST']. "/");
+                    } else {
+                        Session::setFlash('error', [['При регистрации произошла ошибка, повторите попытку пожже']]);
+                        header('Location: http://'.$_SERVER['HTTP_HOST']. "/register");
+                    }
                 }
                 die;
             }
         } else {
             throw new \Exception("Error: method is not allowed");
         }
+    }
+
+    protected function saveUser($data)
+    {
+        $user = new User();
+        $user->email = $data['email'];
+        $user->name = $data['name'];
+        $user->surname = $data['surname'];
+        $user->phone = $data['email'];
+        $user->password = password_hash($data['email'], PASSWORD_DEFAULT);
+        return $user->save();
     }
 }
