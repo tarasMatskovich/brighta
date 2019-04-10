@@ -1,7 +1,14 @@
 <?php
 
 return [
-    '/' => 'index/index',
-    '/login' => 'login/index',
-    '/register' => 'register/index'
+    '/' => [
+        'route' => 'index/index',
+        'middleware' => ['AuthMiddleware']
+    ],
+    'login' => [
+        'route' => 'login/index'
+    ],
+    'register' => [
+        'route' => 'register/index'
+    ]
 ];

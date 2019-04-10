@@ -26,6 +26,15 @@ class Router
         echo $res;
     }
 
+    protected function checkMiddlewares(array $middlewares)
+    {
+        foreach ($middlewares as $middlewareClassName) {
+            $middlewareClassName = "App\\Middleware\\" . $middlewareClassName;
+            $middleware = new $middlewareClassName();
+            $middleware->handle();
+        }
+    }
+
     public function handle()
     {
         try {
@@ -33,18 +42,38 @@ class Router
 
             $internalRoute = null;
 
+            $middlewares = [];
+
             foreach ($this->routes as $routePattern => $path) {
-                if ($uri == "" && $routePattern == '/') {
-                    $internalRoute = $path;
-                    break;
-                } elseif($uri != "" && preg_match("~^$routePattern$~", $uri)) {
-                    $internalRoute = preg_replace("~^$routePattern$~", $path, $uri);
-                    break;
+                $newPath = null;
+                if (!is_array($path)) {
+                    $newPath = $path;
+                } else {
+                    if (isset($path['route'])) {
+                        $newPath = $path['route'];
+                    }
+                }
+                if ($newPath !== null) {
+                    if ($uri == "" && $routePattern == '/') {
+                        $internalRoute = $newPath;
+                        if (isset($path['middleware'])) {
+                            $middlewares = $path['middleware'];
+                        }
+                        break;
+                    } elseif($uri != "" && preg_match("~^$routePattern$~", $uri)) {
+                        if (isset($path['middleware'])) {
+                            $middlewares = $path['middleware'];
+                        }
+                        $internalRoute = preg_replace("~^$routePattern$~", $newPath, $uri);
+                        break;
+                    }
                 }
             }
             if (!$internalRoute) {
                 throw new \Exception("Error: 404: Resource is not found");
             }
+
+            $this->checkMiddlewares($middlewares);
 
             $segments = explode('/', $internalRoute);
             $controllerName = ucfirst(array_shift($segments)) . 'Controller';
