@@ -10,6 +10,12 @@ class Router
     public function __construct()
     {
         $this->routes = include(ROOT . '/routes/routes.php');
+        $this->clearFlashMessages();
+    }
+
+    protected function clearFlashMessages()
+    {
+        Session::clearFlashMessage();
     }
 
     public function getRequestUri()

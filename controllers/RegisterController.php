@@ -5,6 +5,7 @@ namespace App\Controllers;
 
 use App\Components\View;
 use App\Components\Validator;
+use App\Components\Session;
 
 class RegisterController extends Controller
 {
@@ -34,9 +35,13 @@ class RegisterController extends Controller
                     'password.password_confirm' => 'Пароли должны совпадать',
                 ];
                 $validator = Validator::validate($data, $rules, $messages);
-                echo '<pre>';
-                print_r($validator);
-                echo '</pre>';
+                $errors = $validator->getErrors();
+                if (!empty($errors)) {
+                    Session::setFlash('error', $errors);
+                    header('Location: http://'.$_SERVER['HTTP_HOST']. "/register");
+                } else {
+                    return "yes";
+                }
                 die;
             }
         } else {

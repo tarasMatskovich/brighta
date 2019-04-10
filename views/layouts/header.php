@@ -27,3 +27,33 @@
         </nav>
     </div>
 </div>
+
+<div class="alerts mb-3">
+    <div class="container">
+        <?php if (\App\Components\Session::isset('error')): ?>
+            <?php foreach (\App\Components\Session::get('error') as $error):?>
+                <?php foreach ($error as $e):?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?=$e?>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <?php endforeach?>
+            <?php endforeach;?>
+        <?php endif;?>
+
+        <?php if (\App\Components\Session::isset('success')): ?>
+            <?php foreach (\App\Components\Session::get('success') as $error):?>
+                <?php foreach ($error as $e):?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <?=$e?>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <?php endforeach?>
+            <?php endforeach;?>
+        <?php endif;?>
+    </div>
+</div>

@@ -28,6 +28,7 @@ abstract class Model
 
     public function __set($key, $value)
     {
+        $value = mysql_real_escape_string(htmlspecialchars($value));
         $this->attributes[$key] = $value;
     }
 
