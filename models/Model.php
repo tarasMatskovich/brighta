@@ -11,6 +11,7 @@ abstract class Model
     protected static $connection = null;
     protected static $table = null;
     protected $attributes = [];
+    protected static $params = [];
 
     public static function setConnection() {
         static::$connection = DB::getConnection();
@@ -35,6 +36,7 @@ abstract class Model
     public static function find($id)
     {
         static::setConnection();
+        $id = htmlspecialchars(addslashes(trim($id)));
         $result = static::$connection->query("SELECT * FROM " . static::$table . " WHERE id = " . $id);
         $row = $result->fetch();
         if (!$row)
@@ -45,6 +47,42 @@ abstract class Model
         }
         return $activeRecord;
     }
+
+    public static function where(array $params)
+    {
+        static::$params = $params;
+        return static::class;
+    }
+
+    public static function get()
+    {
+        static::setConnection();
+        $sql = "SELECT * FROM " . static::$table;
+        if (!empty(static::$params)) {
+            $sql .= " WHERE ";
+            foreach (static::$params as $field => $value) {
+                $sql .= $field . "=" . ":" . $field . " AND ";
+            }
+            $sql = substr($sql, 0, -5);
+        }
+        $stmt = static::$connection->prepare($sql);
+        foreach (static::$params as $field => $value) {
+            $stmt->bindParam(":" . $field, $value);
+        }
+        $stmt->execute();
+        $collection = array();
+        while ($row = $stmt->fetch()) {
+            $activeRecord = new static;
+            foreach ($row as $key => $value) {
+                $activeRecord->$key = $value;
+            }
+            $collection[] = $activeRecord;
+        }
+        static::$params = [];
+        return $collection;
+    }
+
+
 
     public function save()
     {

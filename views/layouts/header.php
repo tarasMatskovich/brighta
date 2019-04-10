@@ -20,8 +20,12 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-item nav-link" href="/login">Войти</a>
-                    <a class="nav-item nav-link" href="/register">Зарегистрироваться</a>
+                    <?php if (!\App\Components\Session::isset('user')): ?>
+                        <a class="nav-item nav-link" href="/login">Войти</a>
+                        <a class="nav-item nav-link" href="/register">Зарегистрироваться</a>
+                    <?php else: ?>
+                        <a class="nav-item nav-link" href="/logout">Выйти</a>
+                    <?php endif;?>
                 </div>
             </div>
         </nav>

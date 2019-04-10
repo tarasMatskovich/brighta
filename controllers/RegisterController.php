@@ -43,6 +43,7 @@ class RegisterController extends Controller
                 } else {
                     $result = $this->saveUser($data);
                     if ($result) {
+                        // TODO Авторизовать пользователя
                         Session::setFlash('success', [['Вы были успешно зарегистрированы']]);
                         header('Location: http://'.$_SERVER['HTTP_HOST']. "/");
                     } else {
@@ -64,7 +65,11 @@ class RegisterController extends Controller
         $user->name = $data['name'];
         $user->surname = $data['surname'];
         $user->phone = $data['email'];
-        $user->password = password_hash($data['email'], PASSWORD_DEFAULT);
-        return $user->save();
+        $user->password = password_hash($data['password'], PASSWORD_DEFAULT);
+        $result = $user->save();
+        if ($result) {
+            Session::set('user', $user);
+        }
+        return $result;
     }
 }

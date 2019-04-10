@@ -6,15 +6,21 @@ return [
         'middleware' => ['AuthMiddleware']
     ],
     'login' => [
-        'route' => 'login/index'
+        'route' => 'login/index',
+        'middleware' => ['GuestMiddleware']
     ],
     'loginuser' => [
         'route' => 'login/loginuser'
     ],
     'register' => [
-        'route' => 'register/index'
+        'route' => 'register/index',
+        'middleware' => ['GuestMiddleware']
     ],
     'signup' => [
         'route' => 'register/signup'
-    ]
+    ],
+    'logout' => [
+        'route' => 'login/logout',
+        'middleware' => ['AuthMiddleware']
+    ],
 ];

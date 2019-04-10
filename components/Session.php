@@ -53,7 +53,7 @@ class Session
     public static function clearFlashMessage()
     {
         foreach ($_SESSION as $key => $value) {
-            if (json_decode($value)) {
+            if (is_string($value) && json_decode($value)) {
                 $data = json_decode($value);
                 if (isset($data->flash)) {
                     if ($data->flash == true) {
