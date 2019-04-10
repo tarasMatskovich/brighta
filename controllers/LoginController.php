@@ -29,19 +29,25 @@ class LoginController extends Controller
                     'password.required' => 'Поле Пароль обезательное',
                 ];
                 $validator = Validator::validate($data, $rules, $messages);
-                $users = User::where(['email' => $data['email']])::get();
-                if (empty($users)) {
-                    Session::setFlash('error', [['Пользователя с таким email нет в системе']]);
+                $errors = $validator->getErrors();
+                if (!empty($errors)) {
+                    Session::setFlash('error', $errors);
                     header('Location: http://'.$_SERVER['HTTP_HOST']. "/login");
                 } else {
-                    $user = array_shift($users);
-                    if (!password_verify($data['password'], $user->password)) {
-                        Session::setFlash('error', [['Неверный пароль']]);
+                    $users = User::where(['email' => $data['email']])::get();
+                    if (empty($users)) {
+                        Session::setFlash('error', [['Пользователя с таким email нет в системе']]);
                         header('Location: http://'.$_SERVER['HTTP_HOST']. "/login");
                     } else {
-                        Session::set('user', $user);
-                        Session::setFlash('success', [['Вы успешно войшли в систему']]);
-                        header('Location: http://'.$_SERVER['HTTP_HOST']. "/");
+                        $user = array_shift($users);
+                        if (!password_verify($data['password'], $user->password)) {
+                            Session::setFlash('error', [['Неверный пароль']]);
+                            header('Location: http://'.$_SERVER['HTTP_HOST']. "/login");
+                        } else {
+                            Session::set('user', $user);
+                            Session::setFlash('success', [['Вы успешно войшли в систему']]);
+                            header('Location: http://'.$_SERVER['HTTP_HOST']. "/");
+                        }
                     }
                 }
             }

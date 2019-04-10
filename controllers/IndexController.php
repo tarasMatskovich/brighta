@@ -11,6 +11,8 @@ class IndexController extends Controller
     public function index()
     {
         $user = Session::get('user');
+//        var_dump($user['attributes']['img'] == '');
+//        die;
         return View::render('home', [
             'user' => $user
         ]);

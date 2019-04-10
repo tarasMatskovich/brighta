@@ -41,9 +41,21 @@ class RegisterController extends Controller
                     Session::setFlash('error', $errors);
                     header('Location: http://'.$_SERVER['HTTP_HOST']. "/register");
                 } else {
+                    if (isset($_FILES['image'])) {
+                        $types = array('image/gif', 'image/png', 'image/jpeg');
+                        if (!in_array($_FILES['image']['type'], $types)) {
+                            Session::setFlash('error', [['Можно загрузить только файлы изображения (gif,png,jpg)']]);
+                            header('Location: http://'.$_SERVER['HTTP_HOST']. "/register");
+                            die;
+                        } else {
+                            $name = time() . $_FILES['image']['name'];
+                            $fileName = "public/images/" . $name;
+                            copy($_FILES['image']['tmp_name'], $fileName);
+                            $data['image'] = $name;
+                        }
+                    }
                     $result = $this->saveUser($data);
                     if ($result) {
-                        // TODO Авторизовать пользователя
                         Session::setFlash('success', [['Вы были успешно зарегистрированы']]);
                         header('Location: http://'.$_SERVER['HTTP_HOST']. "/");
                     } else {
@@ -64,8 +76,11 @@ class RegisterController extends Controller
         $user->email = $data['email'];
         $user->name = $data['name'];
         $user->surname = $data['surname'];
-        $user->phone = $data['email'];
+        $user->phone = $data['phone'];
         $user->password = password_hash($data['password'], PASSWORD_DEFAULT);
+        if (isset($data['image'])) {
+            $user->img = $data['image'];
+        }
         $result = $user->save();
         if ($result) {
             Session::set('user', $user);

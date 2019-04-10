@@ -12,6 +12,7 @@ abstract class Model implements \JsonSerializable
     protected static $table = null;
     protected $attributes = [];
     protected static $params = [];
+
     public static function setConnection() {
         static::$connection = DB::getConnection();
     }
@@ -41,7 +42,7 @@ abstract class Model implements \JsonSerializable
     public static function find($id)
     {
         static::setConnection();
-        $id = htmlspecialchars(addslashes(trim($id)));
+        $id = (int)htmlspecialchars(addslashes(trim($id)));
         $result = static::$connection->query("SELECT * FROM " . static::$table . " WHERE id = " . $id);
         $row = $result->fetch();
         if (!$row)
