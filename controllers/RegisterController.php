@@ -41,29 +41,33 @@ class RegisterController extends Controller
                     Session::setFlash('error', $errors);
                     header('Location: http://'.$_SERVER['HTTP_HOST']. "/register");
                 } else {
-                    if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
-                        $types = array('image/gif', 'image/png', 'image/jpeg');
-                        if (!in_array($_FILES['image']['type'], $types)) {
-                            Session::setFlash('error', [['Можно загрузить только файлы изображения (gif,png,jpg)']]);
-                            header('Location: http://'.$_SERVER['HTTP_HOST']. "/register");
-                            die;
+                    if (!empty(User::where(['email' => $data['email']])::get())) {
+                        Session::setFlash('error', [['Пользователь с таким email уже существует в системе']]);
+                        header('Location: http://'.$_SERVER['HTTP_HOST']. "/register");
+                    } else {
+                        if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
+                            $types = array('image/gif', 'image/png', 'image/jpeg');
+                            if (!in_array($_FILES['image']['type'], $types)) {
+                                Session::setFlash('error', [['Можно загрузить только файлы изображения (gif,png,jpg)']]);
+                                header('Location: http://'.$_SERVER['HTTP_HOST']. "/register");
+                                die;
+                            } else {
+                                $name = time() . $_FILES['image']['name'];
+                                $fileName = "public/images/" . $name;
+                                copy($_FILES['image']['tmp_name'], $fileName);
+                                $data['image'] = $name;
+                            }
+                        }
+                        $result = $this->saveUser($data);
+                        if ($result) {
+                            Session::setFlash('success', [['Вы были успешно зарегистрированы']]);
+                            header('Location: http://'.$_SERVER['HTTP_HOST']. "/");
                         } else {
-                            $name = time() . $_FILES['image']['name'];
-                            $fileName = "public/images/" . $name;
-                            copy($_FILES['image']['tmp_name'], $fileName);
-                            $data['image'] = $name;
+                            Session::setFlash('error', [['При регистрации произошла ошибка, повторите попытку пожже']]);
+                            header('Location: http://'.$_SERVER['HTTP_HOST']. "/register");
                         }
                     }
-                    $result = $this->saveUser($data);
-                    if ($result) {
-                        Session::setFlash('success', [['Вы были успешно зарегистрированы']]);
-                        header('Location: http://'.$_SERVER['HTTP_HOST']. "/");
-                    } else {
-                        Session::setFlash('error', [['При регистрации произошла ошибка, повторите попытку пожже']]);
-                        header('Location: http://'.$_SERVER['HTTP_HOST']. "/register");
-                    }
                 }
-                die;
             }
         } else {
             throw new \Exception("Error: method is not allowed");
