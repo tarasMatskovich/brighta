@@ -13,6 +13,9 @@ class Router
         $this->clearFlashMessages();
     }
 
+    /**
+     * Метод очищает флеш сообщения, при кажном запросе
+     */
     protected function clearFlashMessages()
     {
         Session::clearFlashMessage();
@@ -32,6 +35,11 @@ class Router
         echo $res;
     }
 
+    /**
+     * @param array $middlewares
+     *
+     * Метод выполняет все действия, которые указаны в классах посредниках
+     */
     protected function checkMiddlewares(array $middlewares)
     {
         foreach ($middlewares as $middlewareClassName) {
@@ -50,6 +58,7 @@ class Router
 
             $middlewares = [];
 
+            // получаем масив маршрутов и проходимся по ему
             foreach ($this->routes as $routePattern => $path) {
                 $newPath = null;
                 if (!is_array($path)) {
@@ -79,8 +88,10 @@ class Router
                 throw new \Exception("Error: 404: Resource is not found");
             }
 
+            // передаем управление классам посредникам (если таковы имеються для даного маршрута)
             $this->checkMiddlewares($middlewares);
 
+            // определяем имя контроллера и действия
             $segments = explode('/', $internalRoute);
             $controllerName = ucfirst(array_shift($segments)) . 'Controller';
             $fullControllerClassName = "App\\Controllers\\" . $controllerName;
